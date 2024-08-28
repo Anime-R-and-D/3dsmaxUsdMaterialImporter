@@ -23,6 +23,8 @@ def __set_vray_map(values: dict[str, Any], attr_type_name: str) -> None:
 
             color = prim.GetAttribute("inputs:color").Get()
             setattr(material_node, color_attr_name, rt.Point3(*(color * 255)))
+        elif id == "vray:TexAColorOp":
+            texture_output_paths = prim.GetAttribute("inputs:color_a").GetConnections()
         else:
             texture_output_paths = [prim.GetPath()]
 
@@ -55,6 +57,7 @@ input_mat_prop_names: dict[str, Callable[[dict[str, Any]], None] | str | None] =
     "anisotropy_derivation": None,
     "anisotropy_rotation": None,
     "brdf_type": None,
+    "bump_map": set_vray_map("bump"),
     "coat_amount": None,
     "coat_bump_lock": None,
     "coat_color": None,
@@ -81,6 +84,7 @@ input_mat_prop_names: dict[str, Callable[[dict[str, Any]], None] | str | None] =
     "metalness": None,
     "new_gtr_anisotropy": None,
     "opacity": None,
+    "opacity_color": set_vray_map("opacity"),
     "opacity_mode": None,
     "option_cutoff": None,
     "option_double_sided": None,
@@ -97,7 +101,7 @@ input_mat_prop_names: dict[str, Callable[[dict[str, Any]], None] | str | None] =
     "reflect_dim_distance_falloff": None,
     "reflect_dim_distance_on": None,
     "reflect_exit_color": None,
-    "reflect_glossiness": None,
+    "reflect_glossiness": set_vray_map("reflectionGlossiness"),
     "reflect_subdivs": None,
     "reflect_trace": None,
     "refract": set_vray_map("refraction"),
