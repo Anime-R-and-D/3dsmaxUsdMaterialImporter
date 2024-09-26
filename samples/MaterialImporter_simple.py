@@ -5,9 +5,8 @@ import importlib
 from pxr import Usd
 from pymxs import runtime as rt
 
-if os.path.dirname(__file__) not in sys.path:
-    sys.path.append(os.path.dirname(__file__))
-
+if os.path.dirname(os.path.dirname(__file__)) not in sys.path:
+    sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 import MaterialImporter
 importlib.reload(MaterialImporter)
 
