@@ -14,6 +14,8 @@ def __set_vray_map(values: dict[str, Any], attr_type_name: str) -> None:
 
     if isinstance(usd_value, Gf.Vec3f):
         setattr(material_node, color_attr_name, rt.Point3(*(usd_value * 255)))
+    elif isinstance(usd_value, float):
+        setattr(material_node, attr_type_name, usd_value)
     elif isinstance(usd_value, Sdf.Path):
         prim = stage.GetPrimAtPath(usd_value.GetPrimPath())
         id = prim.GetAttribute('info:id').Get()
@@ -32,7 +34,7 @@ def __set_vray_map(values: dict[str, Any], attr_type_name: str) -> None:
             texture_node = material_importer.create_material_node(texture_output_path.GetPrimPath())
             setattr(material_node, f"texmap_{attr_type_name}", texture_node)
     else:
-        raise NotImplementedError
+        raise NotImplementedError(f"Unsupported type for {attr_type_name} attribute: {usd_value}")
 
 
 def set_vray_map(attr_type_name: str) -> Callable[[dict[str, Any]], None]:
