@@ -2,7 +2,7 @@ import sys
 import os
 import importlib
 
-from pxr import Usd
+from pxr import Usd, Sdf
 from pymxs import runtime as rt
 
 if os.path.dirname(os.path.dirname(__file__)) not in sys.path:
@@ -11,7 +11,7 @@ import MaterialImporter
 importlib.reload(MaterialImporter)
 
 USD_FILE_PATH = "WRITE YOUR USD FILE PATH"
-MATERIAL_SDF_PATH = "WRITE YOUR MATERIAL SDF PATH IN USD FILE"
+MATERIAL_SDF_PATH = Sdf.Path("WRITE YOUR MATERIAL SDF PATH IN USD FILE")
 
 def main() -> None:
     stage = Usd.Stage.Open(USD_FILE_PATH)

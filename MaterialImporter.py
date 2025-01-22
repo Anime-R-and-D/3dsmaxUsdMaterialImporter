@@ -5,13 +5,13 @@ import types
 from typing import Union, Callable, Any
 
 from pymxs import runtime as rt
-from pxr import Usd
+from pxr import Usd, Sdf
 
 
 class MaterialImporter:
     def __init__(self, stage: Usd.Stage) -> None:
         self.stage = stage
-        self.materials: dict[str, rt.Material] = {}
+        self.materials: dict[Sdf.Path, rt.Material] = {}
 
         self.material_modules: dict[pathlib.Path, dict[str, str | Any]] = {}
 
@@ -67,7 +67,7 @@ class MaterialImporter:
             else:
                 raise NotImplementedError
 
-    def create_material_node(self, sdf_path: str) -> Union[rt.Material, None]:
+    def create_material_node(self, sdf_path: Sdf.Path) -> Union[rt.Material, None]:
         if sdf_path in self.materials:
             return self.materials[sdf_path]
 

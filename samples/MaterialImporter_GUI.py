@@ -47,7 +47,7 @@ class MaterialListWindow(QtWidgets.QDialog):
     def init_list_materials(self):
         material_prims = []
         for prim in self.material_importer.stage.Traverse():
-            if prim.IsA(UsdShade.Material):
+            if prim.IsA(UsdShade.Material):  # type:ignore
                 material_prims.append(prim)
 
         for material in material_prims:
@@ -67,13 +67,13 @@ class MaterialListWindow(QtWidgets.QDialog):
         for material_attr in material_prim.GetAttributes():
             for material_connection in material_attr.GetConnections():
                 child_prim = self.material_importer.stage.GetPrimAtPath(material_connection.GetPrimPath())
-                if child_prim.IsA(UsdShade.Shader):
+                if child_prim.IsA(UsdShade.Shader):  # type:ignore
                     shader_prims.append(child_prim)
-                elif child_prim.IsA(UsdShade.NodeGraph):
+                elif child_prim.IsA(UsdShade.NodeGraph):  # type:ignore
                     for child_attr in child_prim.GetAttributes():
                         for child_connection in child_attr.GetConnections():
                             shader_prim = self.material_importer.stage.GetPrimAtPath(child_connection.GetPrimPath())
-                            if shader_prim.IsA(UsdShade.Shader):
+                            if shader_prim.IsA(UsdShade.Shader):  # type:ignore
                                 shader_prims.append(shader_prim)
 
         for shader_prim in shader_prims:
