@@ -83,7 +83,7 @@ input_mat_prop_names: dict[str, Callable[[dict[str, Any]], None] | str | None] =
     "hilight_glossiness_lock": None,
     "hilight_soften": None,
     "lpe_label": None,
-    "metalness": None,
+    "metalness": set_vray_map("metalness"),
     "new_gtr_anisotropy": None,
     "opacity": None,
     "opacity_color": set_vray_map("opacity"),
