@@ -77,6 +77,7 @@ class MaterialImporter:
 
             module = self.get_id_module(id)
             if module is None:
+                print(f"Module id not found: {id}, {sdf_path}")
                 return None
 
             scene_name = shader.GetAttribute('inputs:scene_name').Get()
