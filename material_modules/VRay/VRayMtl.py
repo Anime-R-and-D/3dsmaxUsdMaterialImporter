@@ -7,7 +7,7 @@ from pymxs import runtime as rt
 def __set_vray_map(values: dict[str, Any], attr_type_name: str) -> None:
     material_node = values["material_node"]
     usd_value = values["usd_value"]
-    stage = values["stage"]
+    stage: Usd.Stage = values["stage"]
     material_importer = values["material_importer"]
 
     color_attr_name = attr_type_name[0].upper() + attr_type_name[1:]
@@ -25,12 +25,21 @@ def __set_vray_map(values: dict[str, Any], attr_type_name: str) -> None:
 
             color = prim.GetAttribute("inputs:color").Get()
             setattr(material_node, color_attr_name, rt.Point3(*(color * 255)))
+            setattr(material_node, f"texmap_{attr_type_name}_multiplier", prim.GetAttribute("inputs:texture_multiplier").Get() * 100)
+        elif id == "vray:TexCombineFloat":
+            texture_output_paths = prim.GetAttribute("inputs:texture").GetConnections()
+            setattr(material_node, attr_type_name, prim.GetAttribute("inputs:value").Get())
+            setattr(material_node, f"texmap_{attr_type_name}_multiplier", prim.GetAttribute("inputs:texture_multiplier").Get() * 100)
         elif id == "vray:TexAColorOp":
             texture_output_paths = prim.GetAttribute("inputs:color_a").GetConnections()
         else:
             texture_output_paths = [prim.GetPath()]
 
         for texture_output_path in texture_output_paths:
+            texturte_output_prim = stage.GetPrimAtPath(texture_output_path.GetPrimPath())
+            if texturte_output_prim.GetAttribute("info:id").Get() == "vray:TexFloatToColor":
+                texture_output_path = texturte_output_prim.GetAttribute("inputs:input").GetConnections()[0]
+
             texture_node = material_importer.create_material_node(texture_output_path.GetPrimPath())
             setattr(material_node, f"texmap_{attr_type_name}", texture_node)
     else:
