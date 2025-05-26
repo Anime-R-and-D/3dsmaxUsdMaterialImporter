@@ -92,20 +92,22 @@ class MaterialReplacer:
             mesh = UsdGeom.Mesh(prim)
 
             max_path = str(mesh.GetPath())[1:]
-            node = get_max_node_by_path(max_path)
-            if node is None:
+            max_node = get_max_node_by_path(max_path)
+            if max_node is None:
                 print("max node not found:", max_path)
                 return
 
             geom_subsets = UsdGeom.Subset.GetAllGeomSubsets(mesh)
             if len(geom_subsets) == 0:
-                self.set_mesh_material(mesh, node)
+                self.set_mesh_material(mesh, max_node)
             else:
-                multi_mat = node.material
-                if rt.isKindOf(multi_mat, rt.Multimaterial):
-                    self.replace_submtls(multi_mat, geom_subsets)
+                max_mtl = max_node.material
+                if rt.isKindOf(max_mtl, rt.Multimaterial):
+                    self.replace_submtls(max_mtl, geom_subsets)
+                    if max_mtl.numsubs == 1:
+                        max_node.material = max_mtl[0]
                 else:
-                    self.set_mesh_material(mesh, node)
+                    self.set_mesh_material(mesh, max_node)
 
 
 class MaterialReplacer_VRayMtl(MaterialReplacer):
