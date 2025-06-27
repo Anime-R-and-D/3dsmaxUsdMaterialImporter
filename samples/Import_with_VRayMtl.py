@@ -3,7 +3,7 @@ import os
 from typing import Any, Optional
 
 from pymxs import runtime as rt
-from pxr import Usd, UsdGeom, UsdShade
+from pxr import Usd, UsdGeom, UsdShade, UsdUtils
 
 if os.path.dirname(os.path.dirname(__file__)) not in sys.path:
     sys.path.append(os.path.dirname(os.path.dirname(__file__)))
@@ -118,12 +118,6 @@ class MaterialReplacer_VRayMtl(MaterialReplacer):
         return vray_mtls
 
 
-def assing_VrayMtls(usd_file: str) -> None:
-    stage = Usd.Stage.Open(usd_file)
-    stage.Reload()
-    MaterialReplacer_VRayMtl(stage).assign_mtls()
-
-
 def deduplicate_MultiMaterials():
     def generate_id(multi_mat: Any) -> str:
         addrs = [rt.refs.getAddr(multi_mat[i]) for i in range(multi_mat.numsubs)]
@@ -138,14 +132,24 @@ def deduplicate_MultiMaterials():
             obj.material = multi_mats[id]
 
 
+def import_with_VRayMtl(stage: Usd.Stage) -> None:
+    stageCache = UsdUtils.StageCache.Get()
+    stageCache.Insert(stage)
+    stageId = stageCache.GetId(stage).ToLongInt()
+    rt.USDImporter.ImportFromCache(stageId)
+
+    MaterialReplacer_VRayMtl(stage).assign_mtls()
+    deduplicate_MultiMaterials()
+
+
 def main() -> None:
     usd_file = rt.getOpenFileName(caption="Open USD file", types="USD (*.usd; *.usda; *.usdc)|*.usd; *.usda; *.usdc|All Files (*)|*")
     if not usd_file:
         return
 
-    rt.USDImporter.importFile(usd_file)
-    assing_VrayMtls(usd_file)
-    deduplicate_MultiMaterials()
+    stage = Usd.Stage.Open(usd_file)
+    stage.Reload()
+    import_with_VRayMtl(stage)
 
 
 if __name__ == "__main__":
